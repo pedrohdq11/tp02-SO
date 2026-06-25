@@ -1,0 +1,8 @@
+# Arquivo de comandos de teste em lote
+# Os comandos aqui simulam a criacao de pastas e arquivos
+criar_dir /docs
+criar_dir /imagens
+importar_arquivo /docs/trabalho.pdf arquivo_real.pdf
+listar /docs
+apagar_dir /imagens
+sair
