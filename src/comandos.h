@@ -1,13 +1,11 @@
 #ifndef COMANDOS_H
 #define COMANDOS_H
 
-// Processa a string de um comando lido e o executa
-void processar_comando(char *comando);
+#include "fs.h"
 
-// Inicia o terminal iterativo aguardando o usuário digitar os comandos
-void modo_interativo(void);
+void processar_comando(SistemaArquivos *fs, char *comando);
+void modo_interativo(SistemaArquivos *fs);
+void modo_arquivo(SistemaArquivos *fs, const char *nome_arquivo);
+void modo_arquivo(SistemaArquivos *fs, const char *nome_arquivo);
 
-// Lê um arquivo de lote (.txt) linha por linha e envia para execução
-void modo_arquivo(const char *nome_arquivo);
-
-#endif // COMANDOS_H
+#endif

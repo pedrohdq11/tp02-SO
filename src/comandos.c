@@ -5,20 +5,13 @@
 #include "fs.h"
 
 // Função para entender e redirecionar o comando digitado
-void processar_comando(char *comando) {
-    // 1. O strtok modifica a string original, então é bom trabalhar em uma cópia.
+void processar_comando(SistemaArquivos *fs, char *comando) {
     char linha_copia[512];
     strncpy(linha_copia, comando, sizeof(linha_copia));
-
-    // 2. Extrai a primeira palavra (a ação). Ex: "criar_dir"
     char *acao = strtok(linha_copia, " ");
-    
-    // Se o usuário só deu "Enter" sem digitar nada
     if (acao == NULL) {
         return; 
     }
-
-    // 3. Extrai a segunda e terceira palavra (se existirem). Ex: "/docs" ou "arquivo.txt"
     char *arg1 = strtok(NULL, " ");
     char *arg2 = strtok(NULL, " ");
 
@@ -60,7 +53,7 @@ void processar_comando(char *comando) {
 }
 
 // Modo 1: Leitura iterativa via terminal (tempo real)
-void modo_interativo() {
+void modo_interativo(SistemaArquivos *fs) {
     char comando[512];
     printf("\n--- Modo Interativo ---\n");
     printf("Digite os comandos (ou 'sair' para encerrar):\n");
@@ -70,23 +63,18 @@ void modo_interativo() {
         if (fgets(comando, sizeof(comando), stdin) == NULL) {
             break;
         }
-        
-        // Remover a quebra de linha do final
         comando[strcspn(comando, "\n")] = 0;
-        
         if (strcmp(comando, "sair") == 0 || strcmp(comando, "exit") == 0) {
             break;
         }
-        
-        // Ignora linhas vazias
         if (strlen(comando) > 0) {
-            processar_comando(comando);
+            processar_comando(fs, comando);
         }
     }
 }
 
 // Modo 2: Leitura de comandos em lote (batch) através de um arquivo
-void modo_arquivo(const char *nome_arquivo) {
+void modo_arquivo(SistemaArquivos *fs, const char *nome_arquivo) {
     FILE *arquivo = fopen(nome_arquivo, "r");
     if (arquivo == NULL) {
         perror("Erro ao abrir o arquivo de comandos");
@@ -98,12 +86,10 @@ void modo_arquivo(const char *nome_arquivo) {
     printf("Lendo comandos do arquivo: %s\n", nome_arquivo);
     
     while (fgets(linha, sizeof(linha), arquivo) != NULL) {
-        // Remover a quebra de linha do final
         linha[strcspn(linha, "\n")] = 0;
         
-        // Ignora linhas vazias
         if (strlen(linha) > 0) {
-            processar_comando(linha);
+            processar_comando(fs, linha);
         }
     }
 
