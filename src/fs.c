@@ -8,69 +8,101 @@
 // ----------------------------------------------------------------------------
 
 void fs_formatar_disco(SistemaArquivos *fs, const char *caminho_arquivo_fisico) {
-    // TODO: Implementar a criacao do arquivo binario principal.
-    // Inicializar o Superbloco, preencher bitmaps com zero e gravar no disco.
+    fs->arquivo_disco = fopen(caminho_arquivo_fisico, "wb+");
+    if (!fs->arquivo_disco) {
+        perror("Erro ao criar o arquivo fisico do disco");
+        exit(EXIT_FAILURE);
+    }
+    
+    if (fs->sb.quantidade_inodes == 0) {
+        fs->sb.quantidade_inodes = fs->sb.tamanho_particao / fs->sb.tamanho_bloco;
+    }
+    
+    uint32_t size_bitmap_inodes = (fs->sb.quantidade_inodes + 7) / 8;
+    uint32_t espaco_metadados = sizeof(Superbloco) + size_bitmap_inodes + (fs->sb.quantidade_inodes * sizeof(Inode));
+    
+    if (espaco_metadados >= fs->sb.tamanho_particao) {
+        printf("Erro: O tamanho da particao é muito pequeno para comportar os metadados.\n");
+        exit(EXIT_FAILURE);
+    }
+    
+    uint32_t espaco_livre = fs->sb.tamanho_particao - espaco_metadados;
+    fs->sb.quantidade_blocos = (espaco_livre * 8) / (fs->sb.tamanho_bloco * 8 + 1);
+    
+    fs->sb.blocos_livres = fs->sb.quantidade_blocos;
+    fs->sb.inodes_livres = fs->sb.quantidade_inodes;
+    
+    uint32_t size_bitmap_blocos = (fs->sb.quantidade_blocos + 7) / 8;
+    
+    fs->sb.inicio_bitmap_inodes = sizeof(Superbloco);
+    fs->sb.inicio_bitmap_blocos = fs->sb.inicio_bitmap_inodes + size_bitmap_inodes;
+    fs->sb.inicio_tabela_inodes = fs->sb.inicio_bitmap_blocos + size_bitmap_blocos;
+    fs->sb.inicio_blocos_dados = fs->sb.inicio_tabela_inodes + (fs->sb.quantidade_inodes * sizeof(Inode));
+    
+    fseek(fs->arquivo_disco, 0, SEEK_SET);
+    fwrite(&fs->sb, sizeof(Superbloco), 1, fs->arquivo_disco);
+    
+    fs->bitmap_inodes = calloc(size_bitmap_inodes, 1);
+    fs->bitmap_blocos = calloc(size_bitmap_blocos, 1);
+    
+    fwrite(fs->bitmap_inodes, 1, size_bitmap_inodes, fs->arquivo_disco);
+    fwrite(fs->bitmap_blocos, 1, size_bitmap_blocos, fs->arquivo_disco);
+    
+    fseek(fs->arquivo_disco, fs->sb.tamanho_particao - 1, SEEK_SET);
+    fputc(0, fs->arquivo_disco);
+    
+    fs->inode_diretorio_atual = 0; 
+    
+    fflush(fs->arquivo_disco);
+    printf("[FS] Disco formatado com sucesso! Arquivo: %s\n", caminho_arquivo_fisico);
 }
 
 void fs_montar_disco(SistemaArquivos *fs, const char *caminho_arquivo_fisico) {
-    // TODO: Implementar a abertura do arquivo existente (.bin).
-    // Ler o Superbloco do disco e carregar os mapas de bits para a memoria RAM.
+    fs->arquivo_disco = fopen(caminho_arquivo_fisico, "rb+");
+    if (!fs->arquivo_disco) {
+        perror("Erro ao abrir o disco (arquivo fisico nao encontrado)");
+        exit(EXIT_FAILURE);
+    }
+    
+    fseek(fs->arquivo_disco, 0, SEEK_SET);
+    fread(&fs->sb, sizeof(Superbloco), 1, fs->arquivo_disco);
+    
+    uint32_t size_bitmap_inodes = (fs->sb.quantidade_inodes + 7) / 8;
+    uint32_t size_bitmap_blocos = (fs->sb.quantidade_blocos + 7) / 8;
+    
+    fs->bitmap_inodes = malloc(size_bitmap_inodes);
+    fs->bitmap_blocos = malloc(size_bitmap_blocos);
+    
+    fseek(fs->arquivo_disco, fs->sb.inicio_bitmap_inodes, SEEK_SET);
+    fread(fs->bitmap_inodes, 1, size_bitmap_inodes, fs->arquivo_disco);
+    
+    fseek(fs->arquivo_disco, fs->sb.inicio_bitmap_blocos, SEEK_SET);
+    fread(fs->bitmap_blocos, 1, size_bitmap_blocos, fs->arquivo_disco);
+    
+    fs->inode_diretorio_atual = 0;
+    
+    printf("[FS] Disco montado com sucesso! Arquivo: %s\n", caminho_arquivo_fisico);
 }
 
-// ----------------------------------------------------------------------------
-// Operações de Diretórios
-// ----------------------------------------------------------------------------
-
 void fs_criar_diretorio(SistemaArquivos *fs, const char *caminho) {
-    // TODO: Implementar a busca de um i-node livre e setar eh_diretorio = 1.
-    // Alocar um bloco de dados vazio para iniciar o array de EntradaDiretorio.
 }
 
 void fs_renomear_diretorio(SistemaArquivos *fs, const char *caminho_antigo, const char *novo_nome) {
-    // TODO: Caminhar ate o diretorio pai, encontrar a EntradaDiretorio com o caminho_antigo
-    // e alterar o texto dela para o novo_nome.
 }
 
 void fs_apagar_diretorio(SistemaArquivos *fs, const char *caminho) {
-    // TODO: Verificar se esta vazio. Remover as entradas do diretorio pai.
-    // Liberar todos os blocos de dados associados no block_bitmap e libertar o i-node.
 }
 
 void fs_listar_conteudo(SistemaArquivos *fs, const char *caminho) {
-    // TODO: Acessar os blocos de dados do i-node alvo. 
-    // Fazer um loop lendo e imprimindo a estrutura EntradaDiretorio ate acabar os dados.
 }
-
-// ----------------------------------------------------------------------------
-// Operações de Arquivos
-// ----------------------------------------------------------------------------
-
 void fs_criar_arquivo(SistemaArquivos *fs, const char *caminho) {
-    // TODO: Alocar um i-node livre (eh_diretorio = 0).
-    // Adicionar uma nova EntradaDiretorio no diretorio pai mapeando para este i-node.
 }
 
 void fs_renomear_arquivo(SistemaArquivos *fs, const char *caminho_antigo, const char *novo_nome) {
-    // TODO: Igual ao de diretorio. Buscar EntradaDiretorio no pai e sobrescrever o nome.
 }
-
 void fs_mover_arquivo(SistemaArquivos *fs, const char *caminho_antigo, const char *novo_caminho) {
-    // TODO: Copiar a EntradaDiretorio antiga para o bloco de dados do novo diretorio pai.
-    // Apagar a EntradaDiretorio antiga do diretorio de origem. O i-node fica intocado!
 }
-
 void fs_apagar_arquivo(SistemaArquivos *fs, const char *caminho) {
-    // TODO: Buscar os ponteiros no i-node (blocos_diretos, bloco_indireto, etc).
-    // Limpar os bits correspondentes no block_bitmap e no inode_bitmap.
-    // Remover a entrada do diretorio pai.
 }
-
-// ----------------------------------------------------------------------------
-// Importação Externa
-// ----------------------------------------------------------------------------
-
 void fs_importar_arquivo(SistemaArquivos *fs, const char *caminho_simulado, const char *caminho_real) {
-    // TODO: Ler sequencialmente os blocos fisicos do PC local (caminho_real).
-    // Alocar blocos iterativamente usando 'fs_encontrar_bloco_livre'
-    // Gravar os chunks de tamanho MAX_TAMANHO_BLOCO e assinar nos indices diretos ou indiretos do i-node.
 }
