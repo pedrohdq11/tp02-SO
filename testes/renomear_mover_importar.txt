@@ -1,0 +1,21 @@
+# Teste para validar renomear, mover e importar arquivo
+# Fluxo:
+# 1. cria um diretório
+# 2. cria um arquivo
+# 3. renomeia o arquivo
+# 4. move o arquivo para outro diretório
+# 5. importa um arquivo externo para o sistema
+
+criar_dir /tmp
+criar_arquivo /arquivo.txt
+renomear_arquivo /arquivo.txt arquivo_renomeado.txt
+mover_arquivo /arquivo_renomeado.txt /tmp/arquivo_migrado.txt
+importar_arquivo /tmp/arquivo_importado.txt /home/leonardo/Área de trabalho/tp02-SO/Arquivo_externo/teste.txt
+listar /
+listar /tmp
+apagar_arquivo /tmp/arquivo_migrado.txt
+apagar_arquivo /tmp/arquivo_importado.txt
+apagar_dir /tmp
+listar /
+listar /tmp
+sair

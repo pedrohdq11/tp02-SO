@@ -1,0 +1,76 @@
+# Arquivo de teste para limpar e restaurar o disco ao estado inicial
+# Este arquivo lista todo o conteúdo e depois apaga tudo
+
+# Listar conteúdo completo antes de apagar
+listar /
+
+# Apagar arquivos em diretórios aninhados (de baixo para cima)
+apagar_arquivo /docs/trabalhos/projeto1.txt
+apagar_arquivo /docs/trabalhos/projeto2.txt
+apagar_arquivo /docs/trabalhos/resumo.txt
+apagar_arquivo /docs/pessoal/vida.txt
+apagar_arquivo /docs/pessoal/metas.txt
+apagar_arquivo /docs/projetos/arquivo.txt
+
+# Apagar diretórios aninhados de documentos
+apagar_dir /docs/trabalhos
+apagar_dir /docs/pessoal
+apagar_dir /docs/projetos
+
+# Apagar arquivos em docs
+apagar_arquivo /docs/relatorio.txt
+apagar_arquivo /docs/notas.txt
+apagar_arquivo /docs/planejamento.txt
+apagar_arquivo /docs/leia-me.txt
+apagar_arquivo /docs/app-config.ini
+
+# Apagar diretório documentos
+apagar_dir /docs
+
+# Apagar arquivos em imagens/fotos
+apagar_arquivo /pics/fotos/viagem.jpg
+apagar_arquivo /pics/fotos/familia.jpg
+apagar_arquivo /pics/fotos/evento.jpg
+
+# Apagar diretório imagens/fotos
+apagar_dir /pics/fotos
+
+# Apagar arquivos em imagens/desenhos
+apagar_arquivo /pics/desenhos/arte1.png
+apagar_arquivo /pics/desenhos/arte2.png
+
+# Apagar diretório imagens/desenhos
+apagar_dir /pics/desenhos
+
+# Apagar diretório imagens/screenshots (vazio)
+apagar_dir /pics/screenshots
+
+# Apagar arquivos restantes em imagens
+apagar_arquivo /pics/foto1.jpg
+apagar_arquivo /pics/foto2.jpg
+apagar_arquivo /pics/foto3.jpg
+
+# Apagar diretório imagens
+apagar_dir /pics
+
+# Apagar arquivos em videos
+apagar_arquivo /videos/tutorial.mp4
+apagar_arquivo /videos/aula.mp4
+
+# Apagar diretório videos
+apagar_dir /videos
+
+# Apagar arquivos em downloads
+apagar_arquivo /downloads/instalador.exe
+apagar_arquivo /downloads/documento.pdf
+
+# Apagar diretório downloads
+apagar_dir /downloads
+
+# Apagar arquivos na raiz
+apagar_arquivo /dados.json
+
+# Listar conteúdo final (deve estar vazio ou apenas com raiz)
+listar /
+
+sair

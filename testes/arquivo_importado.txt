@@ -1,0 +1,2 @@
+Este arquivo foi importado para o simulador de sistema de arquivos.
+Ele serve para validar a operação importar_arquivo.

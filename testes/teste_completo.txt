@@ -1,0 +1,87 @@
+# ============================================
+# TESTE COMPLETO - Verificação de Funcionalidades
+# ============================================
+
+status
+
+# Criar diretórios
+criar_dir /documentos
+criar_dir /imagens
+criar_dir /videos
+criar_dir /documentos/oficiais
+criar_dir /documentos/pessoais
+criar_dir /imagens/viagens
+criar_dir /imagens/familia
+listar /
+
+# Criar arquivos
+criar_arquivo /documentos/relatorio.txt
+criar_arquivo /documentos/contrato.pdf
+criar_arquivo /documentos/oficiais/nota1.txt
+criar_arquivo /documentos/pessoais/lista.txt
+criar_arquivo /imagens/foto1.jpg
+criar_arquivo /imagens/familia/natal.jpg
+criar_arquivo /videos/filme.mp4
+listar /documentos
+listar /documentos/oficiais
+listar /imagens/familia
+
+# Renomear arquivos (apenas nomes, sem caminho completo)
+renomear_arquivo /documentos/relatorio.txt relatorio_2024.txt
+renomear_arquivo /documentos/pessoais/lista.txt compras.txt
+listar /documentos
+listar /documentos/pessoais
+
+# Renomear diretórios (apenas nomes, sem caminho completo)
+renomear_dir /documentos/oficiais formais
+listar /documentos
+listar /documentos/formais
+
+# Mover arquivos
+mover_arquivo /imagens/foto1.jpg /imagens/familia/foto1.jpg
+mover_arquivo /documentos/pessoais/compras.txt /documentos/lista_compras.txt
+listar /imagens/familia
+listar /documentos
+
+# Importar arquivo externo
+importar_arquivo /documentos/importado.txt testes/arquivo_importado.txt
+listar /documentos
+
+# Visualizar estrutura em árvore
+tree
+
+# Status com dados
+status
+
+# Apagar alguns arquivos
+apagar_arquivo /documentos/contrato.pdf
+apagar_arquivo /imagens/familia/natal.jpg
+apagar_arquivo /videos/filme.mp4
+listar /documentos
+listar /imagens/familia
+
+# Apagar diretórios vazios (agora vazios)
+apagar_dir /videos
+apagar_dir /imagens/viagens
+listar /
+
+# Tentar apagar diretório com conteúdo (deve falhar)
+apagar_dir /documentos
+
+# Status antes de formatar
+status
+
+# Formatar disco
+formatar
+
+# Status após formatar
+status
+listar /
+
+# Recrear estrutura após formatar
+criar_dir /novo_dir
+criar_arquivo /novo_arquivo.txt
+listar /
+status
+
+sair

@@ -1,0 +1,84 @@
+# Arquivo de teste para criar estrutura no sistema de arquivos
+# Este arquivo cria diretórios, arquivos e realiza operações de rename e movimentação
+
+# Criar diretórios principais
+criar_dir /documentos
+criar_dir /imagens
+criar_dir /videos
+criar_dir /downloads
+
+# Criar subdiretórios dentro de documentos
+criar_dir /documentos/trabalhos
+criar_dir /documentos/pessoal
+criar_dir /documentos/projetos
+
+# Criar subdiretórios dentro de imagens
+criar_dir /imagens/fotos
+criar_dir /imagens/desenhos
+criar_dir /imagens/screenshots
+
+# Criar alguns arquivos na raiz
+criar_arquivo /leia-me.txt
+criar_arquivo /config.ini
+criar_arquivo /dados.json
+
+# Criar arquivos em documentos
+criar_arquivo /documentos/relatorio.txt
+criar_arquivo /documentos/notas.txt
+criar_arquivo /documentos/planejamento.txt
+
+# Criar arquivos em documentos/trabalhos
+criar_arquivo /documentos/trabalhos/projeto1.txt
+criar_arquivo /documentos/trabalhos/projeto2.txt
+criar_arquivo /documentos/trabalhos/resumo.txt
+
+# Criar arquivos em documentos/pessoal
+criar_arquivo /documentos/pessoal/vida.txt
+criar_arquivo /documentos/pessoal/metas.txt
+
+# Criar arquivos em imagens
+criar_arquivo /imagens/foto1.jpg
+criar_arquivo /imagens/foto2.jpg
+criar_arquivo /imagens/foto3.jpg
+
+# Criar arquivos em imagens/fotos
+criar_arquivo /imagens/fotos/viagem.jpg
+criar_arquivo /imagens/fotos/familia.jpg
+criar_arquivo /imagens/fotos/evento.jpg
+
+# Criar arquivos em imagens/desenhos
+criar_arquivo /imagens/desenhos/arte1.png
+criar_arquivo /imagens/desenhos/arte2.png
+
+# Criar arquivos em videos
+criar_arquivo /videos/tutorial.mp4
+criar_arquivo /videos/aula.mp4
+
+# Criar arquivos em downloads
+criar_arquivo /downloads/instalador.exe
+criar_arquivo /downloads/documento.pdf
+
+# Testar renomeação de arquivos
+renomear_arquivo /leia-me.txt leia-me-primeiro.txt
+renomear_arquivo /config.ini configuracao.ini
+
+# Testar renomeação de diretórios
+renomear_dir /documentos docs
+renomear_dir /imagens pics
+
+# Mover arquivos
+mover_arquivo /leia-me-primeiro.txt /docs/leia-me.txt
+mover_arquivo /configuracao.ini /docs/app-config.ini
+
+# Listar conteúdo dos diretórios criados
+listar /
+listar /docs
+listar /docs/trabalhos
+listar /pics
+listar /pics/fotos
+listar /videos
+listar /downloads
+
+tree /
+
+sair

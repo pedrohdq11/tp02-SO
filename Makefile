@@ -9,7 +9,7 @@ SRC_DIR = src
 INC_DIR = src
 
 # Fontes e objetos (agora incluindo comandos.c e fs.c)
-SRCS = $(SRC_DIR)/main.c $(SRC_DIR)/comandos.c $(SRC_DIR)/fs.c
+SRCS = $(SRC_DIR)/main.c $(SRC_DIR)/comandos.c $(SRC_DIR)/fs.c $(SRC_DIR)/fs_common.c $(SRC_DIR)/fs_dir.c $(SRC_DIR)/fs_file.c
 OBJS = $(SRCS:.c=.o)
 
 all: $(TARGET)

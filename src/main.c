@@ -13,7 +13,7 @@ int main(int argc, char *argv[]) {
     
     const char *arquivo_disco = "disco.bin";
     
-    // Tenta abrir o arquivo para verificar se o disco já foi formatado antes
+    // Verifica se o disco já foi formatado
     FILE *teste = fopen(arquivo_disco, "r");
     if (teste) {
         fclose(teste);
@@ -21,8 +21,8 @@ int main(int argc, char *argv[]) {
         fs_montar_disco(&fs, arquivo_disco);
     } else {
         printf("Disco nao encontrado. Formatando novo sistema de arquivos...\n");
-        fs.sb.tamanho_particao = 10485760; // 10 MB
-        fs.sb.tamanho_bloco = 4096;        // 4 KB
+        fs.sb.tamanho_particao = 10485760;
+        fs.sb.tamanho_bloco = 4096;
         fs.sb.quantidade_inodes = 0;
         
         fs_formatar_disco(&fs, arquivo_disco);
@@ -37,12 +37,47 @@ int main(int argc, char *argv[]) {
     if (argc > 1) {
         modo_arquivo(&fs, argv[1]);
     } else {
-        modo_interativo(&fs);
+        printf("\n--- Menu de Execução ---\n");
+        printf("1. Modo Iterativo\n");
+        printf("2. Executar arquivo de teste (digite o nome do arquivo)\n");
+        printf("Escolha uma opção (1-2): ");
+        
+        int opcao;
+        if (scanf("%d", &opcao) != 1) {
+            printf("Opção inválida!\n");
+            opcao = 1;
+        }
+        getchar(); // Limpar o '\n' do buffer
+        
+        switch (opcao) {
+            case 1:
+                modo_interativo(&fs);
+                break;
+            case 2: {
+                char nome_arquivo[256];
+                printf("Digite o nome do arquivo de teste (ex: testes/renomear_mover_importar.txt ou testes/limpar.txt): ");
+                if (fgets(nome_arquivo, sizeof(nome_arquivo), stdin) == NULL) {
+                    printf("Erro ao ler o nome do arquivo.\n");
+                    break;
+                }
+                nome_arquivo[strcspn(nome_arquivo, "\n")] = '\0';
+                if (nome_arquivo[0] == '\0') {
+                    printf("Nome do arquivo vazio. Usando modo interativo...\n");
+                    modo_interativo(&fs);
+                } else {
+                    modo_arquivo(&fs, nome_arquivo);
+                }
+                break;
+            }
+            default:
+                printf("Opção inválida! Usando modo interativo...\n");
+                modo_interativo(&fs);
+                break;
+        }
     }
 
     printf("\nEncerrando o simulador...\n");
     
-    // Limpeza de recursos
     if (fs.arquivo_disco) fclose(fs.arquivo_disco);
     if (fs.bitmap_inodes) free(fs.bitmap_inodes);
     if (fs.bitmap_blocos) free(fs.bitmap_blocos);

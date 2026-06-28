@@ -1,0 +1,7 @@
+# Teste para validar o comando tree
+criar_dir /pasta1
+criar_dir /pasta1/subdir
+criar_arquivo /pasta1/arquivo.txt
+criar_arquivo /pasta1/subdir/arquivo2.txt
+tree /
+sair

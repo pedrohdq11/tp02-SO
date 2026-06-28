@@ -1,0 +1,9 @@
+# Teste para validar o comando formatar
+criar_dir /teste
+criar_arquivo /teste/arquivo.txt
+listar /
+status
+formatar
+listar /
+status
+sair

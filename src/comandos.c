@@ -4,55 +4,130 @@
 #include "comandos.h"
 #include "fs.h"
 
-// Função para entender e redirecionar o comando digitado
+// Processa comando digitado pelo usuário
 void processar_comando(SistemaArquivos *fs, char *comando) {
     char linha_copia[512];
     strncpy(linha_copia, comando, sizeof(linha_copia));
-    char *acao = strtok(linha_copia, " ");
-    if (acao == NULL) {
-        return; 
-    }
-    char *arg1 = strtok(NULL, " ");
-    char *arg2 = strtok(NULL, " ");
+    linha_copia[sizeof(linha_copia) - 1] = '\0';
 
-    // 4. Árvore de decisões: qual comando foi chamado?
+    char *cursor = linha_copia;
+    while (*cursor == ' ' || *cursor == '\t') {
+        cursor++;
+    }
+
+    if (*cursor == '\0' || *cursor == '#') {
+        return;
+    }
+
+    char *acao = cursor;
+    while (*cursor != '\0' && *cursor != ' ' && *cursor != '\t') {
+        cursor++;
+    }
+    if (*cursor != '\0') {
+        *cursor++ = '\0';
+    }
+
+    while (*cursor == ' ' || *cursor == '\t') {
+        cursor++;
+    }
+
+    char *arg1 = NULL;
+    char *arg2 = NULL;
+    if (*cursor != '\0' && *cursor != '#') {
+        arg1 = cursor;
+        while (*cursor != '\0' && *cursor != ' ' && *cursor != '\t') {
+            cursor++;
+        }
+        if (*cursor != '\0') {
+            *cursor++ = '\0';
+        }
+
+        while (*cursor == ' ' || *cursor == '\t') {
+            cursor++;
+        }
+
+        if (*cursor != '\0' && *cursor != '#') {
+            arg2 = cursor;
+            char *fim = arg2;
+            while (*fim != '\0' && *fim != '#') {
+                fim++;
+            }
+            if (*fim == '#') {
+                *fim = '\0';
+            }
+        }
+    }
+
     if (strcmp(acao, "criar_dir") == 0) {
         if (arg1 != NULL) {
-            printf("[Log] Executando logica para CRIAR DIRETORIO: %s\n", arg1);
-            // -> Aqui chamaremos a função fs_criar_dir(arg1) no futuro
+            fs_criar_diretorio(fs, arg1);
         } else {
             printf("Erro: Faltou o nome do diretorio (Ex: criar_dir /pasta).\n");
         }
-    } 
-    else if (strcmp(acao, "apagar_dir") == 0) {
+    } else if (strcmp(acao, "apagar_dir") == 0) {
         if (arg1 != NULL) {
-            printf("[Log] Executando logica para APAGAR DIRETORIO: %s\n", arg1);
-            // -> fs_apagar_dir(arg1)
+            fs_apagar_diretorio(fs, arg1);
         } else {
             printf("Erro: Faltou o nome do diretorio a ser apagado.\n");
         }
-    }
-    else if (strcmp(acao, "listar") == 0) {
-        // Se listar não tiver argumento, listamos o diretório atual
-        printf("[Log] Executando logica para LISTAR: %s\n", arg1 ? arg1 : "diretorio atual");
-        // -> fs_listar(arg1)
-    }
-    else if (strcmp(acao, "importar_arquivo") == 0) {
+    } else if (strcmp(acao, "criar_arquivo") == 0) {
+        if (arg1 != NULL) {
+            fs_criar_arquivo(fs, arg1);
+        } else {
+            printf("Erro: Faltou o nome do arquivo (Ex: criar_arquivo /arquivo.txt).\n");
+        }
+    } else if (strcmp(acao, "apagar_arquivo") == 0) {
+        if (arg1 != NULL) {
+            fs_apagar_arquivo(fs, arg1);
+        } else {
+            printf("Erro: Faltou o nome do arquivo a ser apagado.\n");
+        }
+    } else if (strcmp(acao, "renomear_arquivo") == 0) {
         if (arg1 != NULL && arg2 != NULL) {
-            printf("[Log] Executando logica para IMPORTAR ARQUIVO.\n");
-            printf("      Destino no simulador: %s\n", arg1);
-            printf("      Arquivo real base: %s\n", arg2);
-            // -> fs_importar_arquivo(arg1, arg2)
+            fs_renomear_arquivo(fs, arg1, arg2);
+        } else {
+            printf("Erro: Faltou argumentos (Ex: renomear_arquivo /origem.txt novo_nome.txt).\n");
+        }
+    } else if (strcmp(acao, "mover_arquivo") == 0) {
+        if (arg1 != NULL && arg2 != NULL) {
+            fs_mover_arquivo(fs, arg1, arg2);
+        } else {
+            printf("Erro: Faltou argumentos (Ex: mover_arquivo /origem.txt /destino.txt).\n");
+        }
+    } else if (strcmp(acao, "renomear_dir") == 0) {
+        if (arg1 != NULL && arg2 != NULL) {
+            fs_renomear_diretorio(fs, arg1, arg2);
+        } else {
+            printf("Erro: Faltou argumentos (Ex: renomear_dir /origem/ novo_nome).\n");
+        }
+    } else if (strcmp(acao, "listar") == 0) {
+        if (arg1 != NULL) {
+            fs_listar_conteudo(fs, arg1);
+        } else {
+            fs_listar_conteudo(fs, NULL);
+        }
+    } else if (strcmp(acao, "tree") == 0 || strcmp(acao, "arvore") == 0) {
+        if (arg1 != NULL) {
+            fs_tree(fs, arg1);
+        } else {
+            fs_tree(fs, NULL);
+        }
+    } else if (strcmp(acao, "status") == 0) {
+        fs_status(fs);
+    } else if (strcmp(acao, "formatar") == 0) {
+        fs_limpar_disco(fs);
+    } else if (strcmp(acao, "importar_arquivo") == 0) {
+        if (arg1 != NULL && arg2 != NULL) {
+            fs_importar_arquivo(fs, arg1, arg2);
         } else {
             printf("Erro: Faltou argumentos (Ex: importar_arquivo /destino.txt origem.txt).\n");
         }
-    }
-    else {
+    } else {
         printf("Comando desconhecido ou nao implementado: '%s'\n", acao);
     }
 }
 
-// Modo 1: Leitura iterativa via terminal (tempo real)
+// Modo interativo: lê comandos do terminal
 void modo_interativo(SistemaArquivos *fs) {
     char comando[512];
     printf("\n--- Modo Interativo ---\n");
@@ -73,7 +148,7 @@ void modo_interativo(SistemaArquivos *fs) {
     }
 }
 
-// Modo 2: Leitura de comandos em lote (batch) através de um arquivo
+// Modo arquivo: lê comandos de um arquivo
 void modo_arquivo(SistemaArquivos *fs, const char *nome_arquivo) {
     FILE *arquivo = fopen(nome_arquivo, "r");
     if (arquivo == NULL) {
@@ -88,9 +163,13 @@ void modo_arquivo(SistemaArquivos *fs, const char *nome_arquivo) {
     while (fgets(linha, sizeof(linha), arquivo) != NULL) {
         linha[strcspn(linha, "\n")] = 0;
         
-        if (strlen(linha) > 0) {
-            processar_comando(fs, linha);
+        if (strlen(linha) == 0 || linha[0] == '#') {
+            continue;
         }
+        if (strcmp(linha, "sair") == 0) {
+            break;
+        }
+        processar_comando(fs, linha);
     }
 
     fclose(arquivo);
